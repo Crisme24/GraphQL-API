@@ -2,8 +2,9 @@
 import express from 'express';
 import compression from 'compression';
 import cors from 'cors';
-import { graphqlHTTP } from 'express-graphql';
 import schema from './schema';
+import { ApolloServer } from 'apollo-server-express';
+import { createServer } from 'http';
 
 const app = express();
 
@@ -15,13 +16,21 @@ app.use(compression());
     res.send('Welcome to course GraphQL');
 });*/
 
-app.use('/', graphqlHTTP({
+// app.use('/', graphqlHTTP({
+//     schema,
+//     graphiql: true
+// }));
+
+const server = new ApolloServer({
     schema,
-    graphiql: true
-}));
+    introspection: true
+});
+
+server.applyMiddleware({ app });
 
 const PORT = 5300;
+const httpServer = createServer(app);
 
-app.listen(
+httpServer.listen(
     { port: PORT},
     () => console.log('\x1b[35m%s\x1b[0m', `Hola Mundo API GraphQL http://localhost:${PORT}/graphql`));
